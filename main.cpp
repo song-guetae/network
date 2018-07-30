@@ -39,10 +39,18 @@ int main(int argc, char* argv[]) {
     printf("Source Port : %d\n",src_port);
     printf("Destination Port : %d\n",des_port);
     int total_len = (packet[16] << 8) + packet[17];
-    int ip_len = packet[14] & 0x0f;
-    int tcp_len = 
-    printf("%d\n",total_len);
-    printf("%d\n",ip_len*4);
+    int ip_len = int(packet[14] & 0x0f);
+    int tcp = (packet[13+ip_len*4+13] >> 4) & 0x0f;
+    int tcp_len = tcp * 4;
+    printf("total length : %d\n",total_len);
+    printf("ip header length : %d\n",ip_len*4);
+    printf("tcp header length : %d\n",tcp_len);
+    int i;
+    int data_len = total_len - ip_len*4 -tcp_len*4;
+    for(i=total_len-data_len; i<data_len;i++){
+    	printf("%02x",packet[i]);
+    }
+    printf("\n");
     printf("----------------------------------------------------------------------\n");}
   }	
   pcap_close(handle);
